@@ -1,5 +1,6 @@
 package com.toplyh.server.service;
 
+import com.toplyh.server.model.entity.Skill;
 import com.toplyh.server.model.entity.User;
 import com.toplyh.server.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +62,10 @@ public class UserService {
         return userRepository.findByName(name);
     }
 
-    public int updateTokenById(Integer id,String token){
-        return userRepository.updateTokenById(id,token);
+    public void update(User user){
+        if (findByName(user.getName())!=null) {
+            userRepository.save(user);
+        }
     }
+
 }

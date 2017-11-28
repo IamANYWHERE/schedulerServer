@@ -2,13 +2,11 @@ package com.toplyh.server.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
-import com.sun.javafx.fxml.expression.Expression;
 import com.toplyh.server.api.state.APIState;
 import com.toplyh.server.model.entity.User;
 import com.toplyh.server.service.AuthenticationService;
 import com.toplyh.server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,23 +31,39 @@ public class AuthenticationApi {
     @PostMapping("")
     public Object login(@RequestBody User user){
         User userInDataBase=userService.findByName(user.getName());
-        JSONObject jsonObject=new JSONObject();
+        JSONObject jsonObject;
         if (userInDataBase==null){
-            jsonObject.put("token","");
-            jsonObject.put("state", APIState.LOGIN_NAME_ERROR);
+            jsonObject=login("","",APIState.LOGIN_NAME_ERROR);
         }else if (!userService.comparePassword(user,userInDataBase)){
-            jsonObject.put("token","");
-            jsonObject.put("state",APIState.LOGIN_PASSWORD_ERROR);
+            jsonObject=login("","",APIState.LOGIN_PASSWORD_ERROR);
         }else{
             String token=authenticationService.getToken(userInDataBase);
-            userService.updateTokenById(userInDataBase.getId(),token);
-            jsonObject.put("token",token);
-            jsonObject.put("state",APIState.LOGIN_RIGHT);
+            String signature=authenticationService.getSignature(token);
+            userInDataBase.setSignature(signature);
+            userService.update(userInDataBase);
+            jsonObject=login(token,userInDataBase.getNickName(),APIState.LOGIN_RIGHT);
+
+            //测试所用
             JWT jwt=JWT.decode(token);
             System.out.println(jwt.getAlgorithm()+":"+jwt.getContentType()+":"+jwt.getId()+":"+
             jwt.getSignature()+":"+jwt.getIssuer()+":"+jwt.getKeyId()+":"+jwt.getSubject()+":"+
             jwt.getType()+":"+jwt.getAudience());
         }
+        return jsonObject;
+    }
+
+    /**
+     * 返回json结果
+     * @param token
+     * @param nickname
+     * @param state  表示登录状态
+     * @return
+     */
+    private JSONObject login(String token,String nickname,int state){
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("token",token);
+        jsonObject.put("nickname",nickname);
+        jsonObject.put("state",state);
         return jsonObject;
     }
 }

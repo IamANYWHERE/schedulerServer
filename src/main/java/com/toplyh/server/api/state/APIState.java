@@ -5,6 +5,7 @@ package com.toplyh.server.api.state;
  */
 public class APIState {
 
+    public static final int AUTHENTICATION_TOKEN_ERROR=444;
     /**
      *AuthenticationApi中状态常量
      */
@@ -22,4 +23,12 @@ public class APIState {
     //注册正常
     public static final int REGISTER_ERROR=201;
     //注册名字已有
+
+    /**
+     * Skill相关状态参数
+     */
+    public static final int SKILL_ADD_RIGHT=300;
+    //添加技能正常
+    public static final int SKILL_SHOW_RIGHT=310;
+    //返回所有技能正常
 }

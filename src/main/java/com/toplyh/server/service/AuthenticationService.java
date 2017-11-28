@@ -24,7 +24,7 @@ public class AuthenticationService {
         String token="";
         try{
             token= JWT.create()
-                    .withAudience(user.getId().toString()+System.currentTimeMillis())
+                    .withAudience(new String[]{user.getId()+"",System.currentTimeMillis()+""})
                     .sign(Algorithm.HMAC256(user.getPassword()));
         }catch ( UnsupportedEncodingException ignore){
             ignore.printStackTrace();
@@ -34,14 +34,19 @@ public class AuthenticationService {
         return token;
     }
 
-    public Boolean authenticateToken(String token){
+    public String getSignature(String token){
+        JWT jwt=JWT.decode(token);
+        return jwt.getSignature();
+    }
+
+    public User authenticateToken(String token){
         JWT jwt=JWT.decode(token);
         User user=userRepository.findOne(Integer.valueOf(jwt.getAudience().get(0)));
-        if (user==null&&!token.equals(user.getToken())){
-            return false;
+        if (user==null||!jwt.getSignature().equals(user.getSignature())){
+            return null;
         }
         else {
-            return true;
+            return user;
         }
     }
 }
