@@ -1,9 +1,8 @@
 package com.toplyh.server.model.repository;
 
-import com.toplyh.server.model.entity.Skill;
+import com.toplyh.server.model.entity.skill.Skill;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.Collection;
 import java.util.List;
 
 /**

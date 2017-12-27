@@ -1,6 +1,6 @@
-package com.toplyh.server.service;
+package com.toplyh.server.service.normal;
 
-import com.toplyh.server.model.entity.Skill;
+import com.toplyh.server.model.entity.skill.Skill;
 import com.toplyh.server.model.repository.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,6 @@ public class SkillService {
 
     public Skill add(Skill skill){
         skillRepository.save(skill);
-        skill.setDescription("hahaha!");
         return skillRepository.findOne(skill.getId());
     }
 

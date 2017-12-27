@@ -1,6 +1,5 @@
-package com.toplyh.server.service;
+package com.toplyh.server.service.normal;
 
-import com.toplyh.server.model.entity.Skill;
 import com.toplyh.server.model.entity.User;
 import com.toplyh.server.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +7,9 @@ import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by 我 on 2017/11/21.
@@ -66,6 +68,10 @@ public class UserService {
         if (findByName(user.getName())!=null) {
             userRepository.save(user);
         }
+    }
+
+    public Iterable<User> findAll(List<Integer> integerList){
+        return userRepository.findAll(integerList);
     }
 
 }

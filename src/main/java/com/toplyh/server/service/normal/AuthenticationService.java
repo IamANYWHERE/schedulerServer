@@ -1,4 +1,4 @@
-package com.toplyh.server.service;
+package com.toplyh.server.service.normal;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

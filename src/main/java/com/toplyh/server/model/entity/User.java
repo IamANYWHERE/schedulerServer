@@ -1,6 +1,10 @@
 package com.toplyh.server.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.toplyh.server.model.entity.project.Project;
+import com.toplyh.server.model.entity.project.member.Member;
+import com.toplyh.server.model.entity.skill.Skill;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -20,6 +24,24 @@ public class User {
     )
     @JsonManagedReference
     private Set<Skill> skills=new HashSet<>();
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonManagedReference
+    private Set<Project> projects=new HashSet<>();
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonManagedReference
+    private Set<Member> members=new HashSet<>();
+
+
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
@@ -72,6 +94,7 @@ public class User {
         this.skills = skills;
     }
 
+    @JsonIgnore
     private String signature;
 
 
@@ -81,5 +104,21 @@ public class User {
 
     public void setSignature(String signature) {
         this.signature = signature;
+    }
+
+    public Set<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(Set<Project> projects) {
+        this.projects = projects;
+    }
+
+    public Set<Member> getMembers() {
+        return members;
+    }
+
+    public void setMembers(Set<Member> members) {
+        this.members = members;
     }
 }

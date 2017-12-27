@@ -1,7 +1,8 @@
-package com.toplyh.server.model.entity;
+package com.toplyh.server.model.entity.skill;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.toplyh.server.model.entity.User;
 
 import javax.persistence.*;
 
