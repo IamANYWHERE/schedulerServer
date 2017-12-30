@@ -38,4 +38,12 @@ public class SprintService {
     public List<Sprint> findByProjectIdAndMemberId(Integer projectId,Integer memberId){
         return sprintRepository.findByProjectIdAndMemberId(projectId,memberId);
     }
+
+    public List<Sprint> findByProjectIdAndStatus(Integer projectId, Sprint.SprintStatus status){
+        return sprintRepository.findByProjectIdAndStatus(projectId,status);
+    }
+
+    public boolean existsByStatus(Sprint.SprintStatus status){
+        return sprintRepository.existsByStatus(status);
+    }
 }

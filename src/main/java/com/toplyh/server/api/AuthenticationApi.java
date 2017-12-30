@@ -42,15 +42,15 @@ public class AuthenticationApi {
         User userInDataBase=userService.findByName(user.getName());
         JSONObject jsonObject;
         if (userInDataBase==null){
-            jsonObject=login("",null,APIState.LOGIN_NAME_ERROR);
+            jsonObject=login("",APIState.LOGIN_NAME_ERROR);
         }else if (!userService.comparePassword(user,userInDataBase)){
-            jsonObject=login("",null,APIState.LOGIN_PASSWORD_ERROR);
+            jsonObject=login("",APIState.LOGIN_PASSWORD_ERROR);
         }else{
             String token=authenticationService.getToken(userInDataBase);
             String signature=authenticationService.getSignature(token);
             userInDataBase.setSignature(signature);
             userService.update(userInDataBase);
-            jsonObject=login(token,userInDataBase,APIState.LOGIN_RIGHT);
+            jsonObject=login(token,APIState.LOGIN_RIGHT);
 
             //测试所用
             JWT jwt=JWT.decode(token);
@@ -67,10 +67,10 @@ public class AuthenticationApi {
      * @param state  表示登录状态
      * @return
      */
-    private JSONObject login(String token,User user,int state){
+    private JSONObject login(String token,int state){
         JSONObject jsonObject=new JSONObject();
         JSONObject jsonData=new JSONObject();
-        JSONArray jsonArraySelf=new JSONArray();
+        /*JSONArray jsonArraySelf=new JSONArray();
         JSONArray jsonArrayOther=new JSONArray();
 
         if (user!=null) {
@@ -96,10 +96,8 @@ public class AuthenticationApi {
                 SimpProject simpProject = new SimpProject(project);
                 jsonArraySelf.add(simpProject);
             }
-        }
-        jsonData.fluentPut("token",token)
-                .fluentPut("selfProjects",jsonArraySelf)
-                .fluentPut("otherProjects",jsonArrayOther);
+        }*/
+        jsonData.fluentPut("token",token);
         jsonObject.put("state",state);
         jsonObject.fluentPut("data",jsonData);
 

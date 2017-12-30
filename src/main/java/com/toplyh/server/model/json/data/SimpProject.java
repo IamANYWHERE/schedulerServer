@@ -2,6 +2,7 @@ package com.toplyh.server.model.json.data;
 
 import com.toplyh.server.model.entity.project.Project;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.Date;
 
 /**
@@ -14,13 +15,20 @@ public class SimpProject {
 
     private Date ddl;
 
-    private Float progress;
+    private Integer progress;
+
+    private String username;
+
+    public SimpProject(){
+
+    }
 
     public SimpProject(Project project){
         this.id=project.getId();
         this.projectName=project.getProjectName();
         this.ddl=project.getDdl();
         this.progress=project.getProgress();
+        username=project.getUser().getName();
     }
 
     public Integer getId() {
@@ -47,11 +55,19 @@ public class SimpProject {
         this.ddl = ddl;
     }
 
-    public Float getProgress() {
+    public Integer getProgress() {
         return progress;
     }
 
-    public void setProgress(Float progress) {
+    public void setProgress(Integer progress) {
         this.progress = progress;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

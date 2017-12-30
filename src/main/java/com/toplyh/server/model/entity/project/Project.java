@@ -28,7 +28,7 @@ public class Project {
 
     private Date ddl;
 
-    private Float progress;
+    private Integer progress;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -130,11 +130,11 @@ public class Project {
         this.sprints = sprints;
     }
 
-    public Float getProgress() {
+    public Integer getProgress() {
         return progress;
     }
 
-    public void setProgress(Float progress) {
+    public void setProgress(Integer progress) {
         this.progress = progress;
     }
 }

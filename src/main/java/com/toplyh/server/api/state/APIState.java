@@ -16,6 +16,12 @@ public class APIState {
     public static final int LOGIN_PASSWORD_ERROR=102;
     //登录密码错误
 
+    public static final int UPDATE_USER_RIGHT=150;
+    //跟新账号正常
+    public static final int UPDATE_USER_PASSWORD_ERROR=151;
+    //密码错误
+    public static final int GET_MSG_RIGHT=160;
+    //获取用户信息正确
     /**
      * UserApi
      */
@@ -87,6 +93,8 @@ public class APIState {
     //展示
     public static final int SPRINT_NO_SPRINT=902;
     //没有这个冲刺
+    public static final int SPRINT_NO_STATUS=904;
+    //这个状态没有sprint
 
     /**
      * WebSocket

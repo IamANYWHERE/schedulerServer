@@ -11,4 +11,6 @@ import java.util.List;
 public interface SprintRepository extends CrudRepository<Sprint,Integer> {
     List<Sprint> findByProjectId(Integer id);
     List<Sprint> findByProjectIdAndMemberId(Integer projectId,Integer memberId);
+    List<Sprint> findByProjectIdAndStatus(Integer projectId, Sprint.SprintStatus status);
+    boolean existsByStatus(Sprint.SprintStatus status);
 }
