@@ -69,15 +69,6 @@ public class MemberApi {
         JSONObject jsonObject=new JSONObject();
         List<Member> members=memberService.findByProjectId(id);
         List<ShowMember> showMembers=new ArrayList<>();
-        for (int i=0;i<members.size();i++){
-            ShowMember showMember=new ShowMember();
-            User userInDB=members.get(i).getUser();
-            showMember.setName(userInDB.getName());
-            showMember.setNickName(userInDB.getNickName());
-            showMember.setContribution(members.get(i).getContribution());
-            showMembers.add(showMember);
-        }
-        jsonObject.put("members",showMembers);
         if (user==null){
             jsonObject.put("state",APIState.AUTHENTICATION_TOKEN_ERROR);
         }else if (!projectService.exists(id)){
@@ -85,6 +76,16 @@ public class MemberApi {
         }else if (members==null){
             jsonObject.put("state",APIState.MEMBER_NO_MEMBER);
         }else {
+            for (int i=0;i<members.size();i++){
+                ShowMember showMember=new ShowMember();
+                User userInDB=members.get(i).getUser();
+                showMember.setName(userInDB.getName());
+                showMember.setNickName(userInDB.getNickName());
+                showMember.setContribution(members.get(i).getContribution());
+                System.out.println(members.get(i).getUser().getName()+"  contribution="+members.get(i).getContribution());
+                showMembers.add(showMember);
+            }
+            jsonObject.put("data",showMembers);
             jsonObject.put("state",APIState.MEMBER_SHOW_RIGHT);
         }
         return jsonObject;

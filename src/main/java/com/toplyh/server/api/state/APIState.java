@@ -45,6 +45,8 @@ public class APIState {
     //添加项目正常
     public static final int PROJECT_SHOW_RIGHT=510;
     //返回所有项目正常
+    public static final int PROJECT_NO_PROJECT=520;
+    //没有这个项目
     /**
      * story
      */
@@ -80,6 +82,8 @@ public class APIState {
     //没有这个会议
     public static final int MEETING_ADD_MEMBER_RIGHT=820;
     //会议添加成员成功
+    public static final int MEETING_AND_MEMBER_ADD_RIGHT=830;
+    //添加会议和成员成功
     /**
      * sprint
      */
@@ -95,6 +99,8 @@ public class APIState {
     //没有这个冲刺
     public static final int SPRINT_NO_STATUS=904;
     //这个状态没有sprint
+    public static final int SPRINT_CHANGE_STATUS_RIGHT=920;
+    //改变状态成功
 
     /**
      * WebSocket

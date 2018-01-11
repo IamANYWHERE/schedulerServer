@@ -9,10 +9,7 @@ import com.toplyh.server.model.entity.project.sprint.Sprint;
 import com.toplyh.server.model.json.data.AddSprint;
 import com.toplyh.server.model.json.data.SimpProject;
 import com.toplyh.server.model.json.data.SimpSprint;
-import com.toplyh.server.service.normal.AuthenticationService;
-import com.toplyh.server.service.normal.MemberService;
-import com.toplyh.server.service.normal.ProjectService;
-import com.toplyh.server.service.normal.SprintService;
+import com.toplyh.server.service.normal.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,16 +26,19 @@ public class SprintApi {
     private SprintService sprintService;
     private ProjectService projectService;
     private MemberService memberService;
+    private UserService userService;
 
     @Autowired
     public SprintApi(AuthenticationService authenticationService,
                      SprintService sprintService,
                      ProjectService projectService,
-                     MemberService memberService){
+                     MemberService memberService,
+                     UserService userService){
         this.authenticationService=authenticationService;
         this.sprintService=sprintService;
         this.projectService=projectService;
         this.memberService=memberService;
+        this.userService=userService;
     }
 
     @PostMapping("/add")
@@ -47,7 +47,14 @@ public class SprintApi {
         User user=authenticationService.authenticateToken(token);
         JSONObject jsonObject=new JSONObject();
         Project project=projectService.findById(aSprint.getProjectId());
-        Member member=memberService.findById(aSprint.getMemberId());
+        User memUser=userService.findByName(aSprint.getMemberName());
+        Member member;
+        if (memUser==null||project==null){
+            member=null;
+            System.out.println("member=null");
+        }else{
+            member=memberService.findByProjectIdAndUserId(aSprint.getProjectId(),memUser.getId());
+        }
         if (user==null){
             jsonObject.put("state",APIState.AUTHENTICATION_TOKEN_ERROR);
         }else if (project==null){
@@ -129,7 +136,7 @@ public class SprintApi {
             jsonObject.put("state",APIState.SPRINT_SHOW_RIGHT);
             List<SimpSprint> simpSprint=new ArrayList<>();
             Project project=projectService.findById(projectId);
-            if (user.getId().equals(project.getId())){
+            if (user.getId().equals(project.getUser().getId())){
                 for (Sprint s :
                         sprints) {
                     SimpSprint sim=new SimpSprint();
@@ -154,7 +161,7 @@ public class SprintApi {
                 }
 
                 if (m!=null){
-                    List<Sprint> sps=sprintService.findByProjectIdAndMemberId(projectId,m.getId());
+                    List<Sprint> sps=sprintService.findByProjectIdAndMemberIdAndStatus(projectId,m.getId(), Sprint.SprintStatus.valueOf(status));
                     for (Sprint s :
                             sps) {
                         SimpSprint sim=new SimpSprint();
@@ -189,6 +196,47 @@ public class SprintApi {
             sprint.setWorkTime(3);
 
             jsonObject.put("sprint",sprint);
+        }
+        return jsonObject;
+    }
+
+    @GetMapping("/change/status")
+    public Object changeStatus(@RequestHeader(value = "token")String token,
+                              @RequestParam(value = "sprintId") Integer sprintId,
+                              @RequestParam(value = "status") String status){
+        User user=authenticationService.authenticateToken(token);
+        JSONObject jsonObject=new JSONObject();
+        if (user==null){
+            jsonObject.put("state",APIState.AUTHENTICATION_TOKEN_ERROR);
+        }else if (!sprintService.exists(sprintId)){
+            jsonObject.put("state",APIState.SPRINT_NO_SPRINT);
+        }else {
+            Sprint sprint=sprintService.findById(sprintId);
+            sprint.setStatus(Sprint.SprintStatus.valueOf(status));
+            sprintService.add(sprint);
+            if(status.equals("BO")){
+                Project project=sprint.getProject();
+                Member member=sprint.getMember();
+                List<Sprint> sprints=new ArrayList<>();
+                Iterator<Sprint> sit=project.getSprints().iterator();
+                while (sit.hasNext()){
+                    Sprint s=sit.next();
+                    if (s.getStatus().equals(Sprint.SprintStatus.BO)){
+                        sprints.add(s);
+                    }
+                }
+                int number=0;
+                for (Sprint sp :
+                        sprints) {
+                    if (sp.getMember().equals(member)){
+                        number+=1;
+                    }
+                }
+                member.setContribution((int)(((float)number/(float) sprints.size())*100));
+                System.out.println((int)(((float)number/(float) sprints.size())*100));
+                memberService.add(member);
+            }
+            jsonObject.put("state",APIState.SPRINT_CHANGE_STATUS_RIGHT);
         }
         return jsonObject;
     }

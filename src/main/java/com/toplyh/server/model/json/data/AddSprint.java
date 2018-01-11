@@ -14,7 +14,7 @@ public class AddSprint {
      */
 
     private int projectId;
-    private int memberId;
+    private String memberName;
     private SprintBean sprint;
 
     public int getProjectId() {
@@ -25,12 +25,12 @@ public class AddSprint {
         this.projectId = projectId;
     }
 
-    public int getMemberId() {
-        return memberId;
+    public String getMemberName() {
+        return memberName;
     }
 
-    public void setMemberId(int memberId) {
-        this.memberId = memberId;
+    public void setMemberName(String memberName) {
+        this.memberName = memberName;
     }
 
     public SprintBean getSprint() {

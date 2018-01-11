@@ -12,5 +12,6 @@ public interface SprintRepository extends CrudRepository<Sprint,Integer> {
     List<Sprint> findByProjectId(Integer id);
     List<Sprint> findByProjectIdAndMemberId(Integer projectId,Integer memberId);
     List<Sprint> findByProjectIdAndStatus(Integer projectId, Sprint.SprintStatus status);
+    List<Sprint> findByProjectIdAndMemberIdAndStatus(Integer projectId, Integer memberId, Sprint.SprintStatus status);
     boolean existsByStatus(Sprint.SprintStatus status);
 }

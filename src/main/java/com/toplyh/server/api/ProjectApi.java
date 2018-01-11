@@ -6,6 +6,7 @@ import com.toplyh.server.api.state.APIState;
 import com.toplyh.server.model.entity.project.Project;
 import com.toplyh.server.model.entity.User;
 import com.toplyh.server.model.entity.project.member.Member;
+import com.toplyh.server.model.entity.project.sprint.Sprint;
 import com.toplyh.server.model.json.data.ProjectAndMember;
 import com.toplyh.server.model.json.data.SimpProject;
 import com.toplyh.server.service.normal.AuthenticationService;
@@ -69,18 +70,20 @@ public class ProjectApi {
             project.setProjectName(projectAndMember.getProjectName());
             project.setDdl(new Date(projectAndMember.getDdl()));
             project.setUser(user);
-
+            System.out.println(projectAndMember.getMembers().size());
             List<String> memNames=projectAndMember.getMembers();
             Set<Member> members=new HashSet<>();
             for (int i=0;i<memNames.size();i++){
                 User muser=userService.findByName(memNames.get(i));
-                if (muser==null){
+                if (muser==null||muser.getId().equals(user.getId())){
                     continue;
                 }
                 Member member=new Member();
                 member.setUser(muser);
                 member.setContribution(0);
+                member.setProject(project);
                 members.add(member);
+                System.out.println(member.getUser().getName()+" "+member.getContribution());
             }
             project.setMembers(members);
             projectService.add(project);
@@ -127,6 +130,9 @@ public class ProjectApi {
             }
 
             for (int i = 0; i < mprojects.size(); i++) {
+                if (mprojects.get(i)==null){
+                    continue;
+                }
                 SimpProject sp = new SimpProject(mprojects.get(i));
                 jsonArrayOther.add(sp);
             }
@@ -134,6 +140,8 @@ public class ProjectApi {
             while (pit.hasNext()) {
                 JSONObject jsonProject = new JSONObject();
                 Project project = pit.next();
+                if (project==null)
+                    continue;
                 SimpProject simpProject = new SimpProject(project);
                 jsonArraySelf.add(simpProject);
             }
@@ -143,6 +151,39 @@ public class ProjectApi {
             jsonObject.fluentPut("state",APIState.PROJECT_SHOW_RIGHT)
                     .fluentPut("data",jsonData);
 
+        }
+        return jsonObject;
+    }
+
+    @GetMapping("/progress")
+    public Object getProgress(@RequestHeader(value ="token") String token,
+                              @RequestParam(value = "projectId") Integer projectId){
+        User user=authenticationService.authenticateToken(token);
+        JSONObject jsonObject=new JSONObject();
+        if (user==null){
+            jsonObject.put("state",APIState.AUTHENTICATION_TOKEN_ERROR);
+        }else if (!projectService.exists(projectId)){
+            jsonObject.put("state",APIState.PROJECT_NO_PROJECT);
+        }else {
+            Project project=projectService.findById(projectId);
+            Set<Sprint> sprints=project.getSprints();
+            Iterator<Sprint> sit=sprints.iterator();
+            Integer BO=0;
+            while (sit.hasNext()) {
+                Sprint sprint = sit.next();
+                if (sprint.getStatus()== Sprint.SprintStatus.BO){
+                    BO+=1;
+                }
+            }
+            if (sprints.size()>1) {
+                project.setProgress((int) ((((float)BO / (float)sprints.size()))*100));
+            }else {
+                project.setProgress(0);
+            }
+            projectService.add(project);
+            System.out.println("BO="+BO+"  SIZE="+sprints.size());
+            jsonObject.put("state",APIState.PROJECT_SHOW_RIGHT);
+            jsonObject.put("data",project.getProgress());
         }
         return jsonObject;
     }

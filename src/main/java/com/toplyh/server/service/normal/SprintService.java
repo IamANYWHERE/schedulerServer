@@ -43,7 +43,15 @@ public class SprintService {
         return sprintRepository.findByProjectIdAndStatus(projectId,status);
     }
 
+    public List<Sprint> findByProjectIdAndMemberIdAndStatus(Integer projectId, Integer memberId, Sprint.SprintStatus status){
+        return sprintRepository.findByProjectIdAndMemberIdAndStatus(projectId,memberId,status);
+    }
+
     public boolean existsByStatus(Sprint.SprintStatus status){
         return sprintRepository.existsByStatus(status);
+    }
+
+    public boolean exists(Integer sprintId){
+        return sprintRepository.exists(sprintId);
     }
 }
